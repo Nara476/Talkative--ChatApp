@@ -54,10 +54,11 @@
                 });
 
                 // Send join message
-                stompClient.send("/app/chat.sendmessage", {}, JSON.stringify({
+                stompClient.send("/app/chat.addUser", {}, JSON.stringify({
                     sender: username,
                     type: 'JOIN'
                 }));
+
             });
         }
 
