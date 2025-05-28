@@ -13,8 +13,11 @@
     <input type="text" id="username" placeholder="Enter your name" />
     <button id="connectBtn" onclick="connect()">Connect</button>
     <div id="chat" style="border:1px solid #ccc; height:300px; overflow-y:auto; padding:10px; margin:10px 0;"></div>
-    <input type="text" id="message" placeholder="Type your message here..." />
-    <button onclick="sendMessage()">Send</button>
+    <div class="message-bar">
+        <input type="text" id="message" placeholder="Type your message here..." />
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
 
     <script>
         let stompClient = null;
