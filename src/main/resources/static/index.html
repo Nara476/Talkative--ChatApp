@@ -9,7 +9,7 @@
 </head>
 
 <body>
-    <h2>WebSocket Chat</h2>
+    <h2>Talkative</h2>
     <input type="text" id="username" placeholder="Enter your name" />
     <button id="connectBtn" onclick="connect()">Connect</button>
     <div id="chat" style="border:1px solid #ccc; height:300px; overflow-y:auto; padding:10px; margin:10px 0;"></div>
@@ -41,10 +41,21 @@
             stompClient.connect({}, function (frame) {
                 console.log('Connected: ' + frame);
 
-                // Disable connect button
                 document.getElementById('connectBtn').disabled = true;
 
-                // Subscribe to public topic
+                // Load old messages AFTER connecting and providing username
+                fetch("https://talkative-chatapp-5.onrender.com/api/messages")
+                    .then(response => response.json())
+                    .then(messages => {
+                        messages.forEach(message => {
+                            if (message.type === 'CHAT') {
+                                showMessage(message.sender + ': ' + message.message);
+                            } else if (message.type === 'JOIN') {
+                                showMessage(message.sender + ' joined earlier');
+                            }
+                        });
+                    });
+
                 stompClient.subscribe('/topic/public', function (messageOutput) {
                     const message = JSON.parse(messageOutput.body);
                     if (message.type === 'CHAT') {
@@ -56,21 +67,19 @@
                     }
                 });
 
-                // Send join message
                 stompClient.send("/app/chat.addUser", {}, JSON.stringify({
                     sender: username,
                     type: 'JOIN'
                 }));
-
             });
         }
+
 
         function sendMessage() {
             const messageContent = document.getElementById('message').value.trim();
             if (messageContent && stompClient && stompClient.connected) {
                 const chatMessage = {
                     sender: username,
-                    content: messageContent,
                     type: 'CHAT',
                     message: messageContent
                 };
